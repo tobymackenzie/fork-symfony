@@ -47,6 +47,8 @@ class ApplicationTest extends TestCase
         require_once self::$fixturesPath.'/Foo5Command.php';
         require_once self::$fixturesPath.'/FoobarCommand.php';
         require_once self::$fixturesPath.'/BarBucCommand.php';
+        require_once self::$fixturesPath.'/FooCallRequiredArgumentCommand.php';
+        require_once self::$fixturesPath.'/FooRequiredArgumentCommand.php';
         require_once self::$fixturesPath.'/FooSubnamespaced1Command.php';
         require_once self::$fixturesPath.'/FooSubnamespaced2Command.php';
         require_once self::$fixturesPath.'/TestTiti.php';
@@ -1227,6 +1229,49 @@ class ApplicationTest extends TestCase
         $this->assertEquals('some test value', $extraValue);
     }
 
+    public function testRunSubcommandWithRequiredArgumentFromDefaultCommand()
+    {
+        $defaultCommand = new \FooCallRequiredArgumentCommand();
+        $calledCommand = new \FooRequiredArgumentCommand();
+        $application = new Application();
+        $application->add($defaultCommand);
+        $application->add($calledCommand);
+        // $application->setDefaultCommand($defaultCommand->getName());
+// $application->setCatchExceptions(false);
+        echo 'a';
+        set_error_handler(function($num, $str, $file, $line, $context){
+            echo 'error handler: ' . json_encode([
+                '$num'=> $num,
+                '$str'=> $str,
+                '$file'=> $file,
+                '$line'=> $line,
+                '$context'=> $context
+            ]);
+        });
+        try{
+            // $application->run(new ArrayInput(Array('command'=> 'foo:call')));
+            echo 'b';
+        }catch(\Error $e){
+            echo 'e';
+            var_dump($e);
+        }catch(\Exception $e){
+            echo 'e';
+            var_dump($e);
+        }finally{
+            echo 'finally';
+        }
+        echo 'b';
+        // $tester = new ApplicationTester($application);
+        // $tester->run(array(), array('interactive' => false));
+        // $tester->run(array('command'=> 'foo:call'));
+        echo 'c';
+        // try {
+            // $this->assertEquals('called'.PHP_EOL.'called'.PHP_EOL.'foovalue'.PHP_EOL, $tester->getDisplay(), 'Application runs the default set command and calls subcommand from within default command');
+        // } catch (\Exception $e) {
+        //     $this->fail('No exception should be thrown when…');
+        // }
+        restore_error_handler();
+    }
     public function testTerminalDimensions()
     {
         $application = new Application();

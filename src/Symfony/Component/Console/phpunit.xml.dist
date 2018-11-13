@@ -9,7 +9,8 @@
          failOnWarning="true"
 >
     <php>
-        <ini name="error_reporting" value="-1" />
+        <ini name="error_reporting" value="true" />
+        <ini name="display_errors" value="true" />
     </php>
 
     <testsuites>
